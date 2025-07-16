@@ -1,9 +1,26 @@
 using HelloWorld.GraphQL.Queries;
 using HelloWorld.GraphQL.Mutations;
+using HelloWorld.Services;
+using HelloWorld.Configuration;
+using Amazon.DynamoDBv2;
+using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add GraphQL services
+// Add logging
+builder.Services.AddLogging();
+
+// Configure DynamoDB
+builder.Services.AddSingleton<IAmazonDynamoDB>(provider =>
+{
+    var configuration = provider.GetService<IConfiguration>();
+    return DynamoDbConfiguration.CreateDynamoDbClient(configuration);
+});
+
+// Add DynamoDB service
+builder.Services.AddScoped<DriverPositionService>();
+
+// Add GraphQL services with dependency injection
 builder.Services
     .AddGraphQLServer()
     .AddQueryType<Query>()
@@ -22,6 +39,25 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Validate DynamoDB connection on startup
+using (var scope = app.Services.CreateScope())
+{
+    var dynamoClient = scope.ServiceProvider.GetRequiredService<IAmazonDynamoDB>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    
+    logger.LogInformation("Validating DynamoDB connection...");
+    var isConnected = await DynamoDbConfiguration.ValidateConnectionAsync(dynamoClient);
+    
+    if (isConnected)
+    {
+        logger.LogInformation("✓ DynamoDB connection validated successfully");
+    }
+    else
+    {
+        logger.LogWarning("⚠️ DynamoDB connection issues detected");
+    }
+}
 
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())

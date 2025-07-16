@@ -1,4 +1,6 @@
 using HelloWorld.GraphQL.Types;
+using HelloWorld.Services;
+using HelloWorld.Models;
 
 namespace HelloWorld.GraphQL.Queries;
 
@@ -8,6 +10,12 @@ namespace HelloWorld.GraphQL.Queries;
 public class Query
 {
     private static readonly HttpClient client = new HttpClient();
+    private readonly DriverPositionService? _driverPositionService;
+
+    public Query(DriverPositionService? driverPositionService = null)
+    {
+        _driverPositionService = driverPositionService;
+    }
 
     /// <summary>
     /// Returns a simple hello world message with location
@@ -59,6 +67,54 @@ public class Query
         };
     }
 
+    /// <summary>
+    /// Get all driver positions for a specific route
+    /// </summary>
+    public async Task<List<DriverPositionType>> GetDriverPositionsByRoute(string idRuta)
+    {
+        if (_driverPositionService == null)
+            throw new InvalidOperationException("DriverPositionService not available");
+
+        var positions = await _driverPositionService.GetDriverPositionsByRouteAsync(idRuta);
+        return positions.Select(MapToGraphQLType).ToList();
+    }
+
+    /// <summary>
+    /// Get a specific driver position
+    /// </summary>
+    public async Task<DriverPositionType?> GetDriverPosition(string idRuta, string idDriver)
+    {
+        if (_driverPositionService == null)
+            throw new InvalidOperationException("DriverPositionService not available");
+
+        var position = await _driverPositionService.GetDriverPositionAsync(idRuta, idDriver);
+        return position != null ? MapToGraphQLType(position) : null;
+    }
+
+    /// <summary>
+    /// Get all driver positions across all routes
+    /// </summary>
+    public async Task<List<DriverPositionType>> GetAllDriverPositions()
+    {
+        if (_driverPositionService == null)
+            throw new InvalidOperationException("DriverPositionService not available");
+
+        var positions = await _driverPositionService.GetAllDriverPositionsAsync();
+        return positions.Select(MapToGraphQLType).ToList();
+    }
+
+    /// <summary>
+    /// Get active drivers for a specific route
+    /// </summary>
+    public async Task<List<DriverPositionType>> GetActiveDriversForRoute(string idRuta)
+    {
+        if (_driverPositionService == null)
+            throw new InvalidOperationException("DriverPositionService not available");
+
+        var positions = await _driverPositionService.GetActiveDriversForRouteAsync(idRuta);
+        return positions.Select(MapToGraphQLType).ToList();
+    }
+
     private static async Task<string> GetCallingIP()
     {
         try
@@ -73,6 +129,21 @@ public class Query
         {
             return "localhost";
         }
+    }
+
+    private static DriverPositionType MapToGraphQLType(DriverPosition position)
+    {
+        return new DriverPositionType
+        {
+            IdRuta = position.IdRuta,
+            IdDriver = position.IdDriver,
+            Longitude = position.Longitude,
+            Latitude = position.Latitude,
+            Timestamp = position.Timestamp,
+            Speed = position.Speed,
+            Heading = position.Heading,
+            Status = position.Status
+        };
     }
 }
 

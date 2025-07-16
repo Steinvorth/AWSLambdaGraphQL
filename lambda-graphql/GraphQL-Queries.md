@@ -1,6 +1,6 @@
 # Sample GraphQL Queries for Testing
 
-## Query Examples
+## Basic Query Examples
 
 ### 1. Get Hello World
 ```graphql
@@ -40,7 +40,175 @@ query GetServerTime {
 }
 ```
 
-## Mutation Examples
+## Driver Position Queries (DynamoDB)
+
+### 1. Get All Driver Positions for a Route
+```graphql
+query GetDriverPositionsByRoute($idRuta: String!) {
+  getDriverPositionsByRoute(idRuta: $idRuta) {
+    idRuta
+    idDriver
+    longitude
+    latitude
+    timestamp
+    speed
+    heading
+    status
+  }
+}
+```
+
+Variables:
+```json
+{
+  "idRuta": "ROUTE_001"
+}
+```
+
+### 2. Get Specific Driver Position
+```graphql
+query GetDriverPosition($idRuta: String!, $idDriver: String!) {
+  getDriverPosition(idRuta: $idRuta, idDriver: $idDriver) {
+    idRuta
+    idDriver
+    longitude
+    latitude
+    timestamp
+    speed
+    heading
+    status
+  }
+}
+```
+
+Variables:
+```json
+{
+  "idRuta": "ROUTE_001",
+  "idDriver": "DRIVER_001"
+}
+```
+
+### 3. Get All Driver Positions
+```graphql
+query GetAllDriverPositions {
+  getAllDriverPositions {
+    idRuta
+    idDriver
+    longitude
+    latitude
+    timestamp
+    speed
+    heading
+    status
+  }
+}
+```
+
+### 4. Get Active Drivers for Route
+```graphql
+query GetActiveDriversForRoute($idRuta: String!) {
+  getActiveDriversForRoute(idRuta: $idRuta) {
+    idRuta
+    idDriver
+    longitude
+    latitude
+    timestamp
+    speed
+    heading
+    status
+  }
+}
+```
+
+Variables:
+```json
+{
+  "idRuta": "ROUTE_001"
+}
+```
+
+## Driver Position Mutations (DynamoDB)
+
+### 1. Save Driver Position
+```graphql
+mutation SaveDriverPosition($input: DriverPositionInput!) {
+  saveDriverPosition(input: $input) {
+    success
+    message
+    driverPosition {
+      idRuta
+      idDriver
+      longitude
+      latitude
+      timestamp
+      speed
+      heading
+      status
+    }
+  }
+}
+```
+
+Variables:
+```json
+{
+  "input": {
+    "idRuta": "ROUTE_001",
+    "idDriver": "DRIVER_001",
+    "longitude": -74.0060,
+    "latitude": 40.7128,
+    "speed": 35.5,
+    "heading": 180.0,
+    "status": "Active"
+  }
+}
+```
+
+### 2. Update Driver Status
+```graphql
+mutation UpdateDriverStatus($idRuta: String!, $idDriver: String!, $status: String!) {
+  updateDriverStatus(idRuta: $idRuta, idDriver: $idDriver, status: $status) {
+    success
+    message
+    driverPosition {
+      idRuta
+      idDriver
+      status
+      timestamp
+    }
+  }
+}
+```
+
+Variables:
+```json
+{
+  "idRuta": "ROUTE_001",
+  "idDriver": "DRIVER_001",
+  "status": "Inactive"
+}
+```
+
+### 3. Delete Driver Position
+```graphql
+mutation DeleteDriverPosition($idRuta: String!, $idDriver: String!) {
+  deleteDriverPosition(idRuta: $idRuta, idDriver: $idDriver) {
+    success
+    message
+  }
+}
+```
+
+Variables:
+```json
+{
+  "idRuta": "ROUTE_001",
+  "idDriver": "DRIVER_001"
+}
+```
+
+## Basic Mutation Examples
 
 ### 1. Create Hello World
 ```graphql
@@ -76,16 +244,52 @@ query IntrospectionQuery {
 }
 ```
 
-## Using with variables
+## Sample Real-time Updates
+
+### Simulate Driver Movement
 ```graphql
-query GetCustomHelloWithVariable($msg: String!) {
-  getCustomHello(message: $msg)
+mutation SimulateDriverMovement {
+  saveDriverPosition(input: {
+    idRuta: "ROUTE_NYC_001",
+    idDriver: "DRIVER_JOHN",
+    longitude: -74.0060,
+    latitude: 40.7128,
+    speed: 25.0,
+    heading: 90.0,
+    status: "Active"
+  }) {
+    success
+    message
+    driverPosition {
+      idRuta
+      idDriver
+      longitude
+      latitude
+      timestamp
+      speed
+      heading
+      status
+    }
+  }
 }
 ```
 
-Variables:
-```json
-{
-  "msg": "Hello with variables!"
+### Track Multiple Drivers
+```graphql
+query TrackMultipleDrivers {
+  route1: getDriverPositionsByRoute(idRuta: "ROUTE_NYC_001") {
+    idDriver
+    longitude
+    latitude
+    timestamp
+    status
+  }
+  route2: getDriverPositionsByRoute(idRuta: "ROUTE_NYC_002") {
+    idDriver
+    longitude
+    latitude
+    timestamp
+    status
+  }
 }
 ```

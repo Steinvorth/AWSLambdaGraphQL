@@ -416,4 +416,12 @@ __pycache__/
 bin/
 obj/
 
+# .NET Build artifacts
+*.dll
+*.deps.json
+*.runtimeconfig.json
+
+# AWS SAM build artifacts
+.aws-sam/
+
 # End of https://www.gitignore.io/api/macos,linux,windows,sublimetext,dotsettings,visualstudio,visualstudiocode
