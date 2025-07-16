@@ -1,0 +1,49 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lambda-graphql", "lambda-graphql", "{776C6F54-940C-1CC7-5C62-8AA152B99E6A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{A9206DA3-B598-A597-C4E1-C45023FF0384}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld.Tests", "lambda-graphql\test\HelloWorld.Test\HelloWorld.Tests.csproj", "{0CB65561-B74B-956C-6179-B6DC4F4A06F4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E9B9D9CD-CAF2-56AA-1709-EA6431BFF179}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld", "lambda-graphql\src\HelloWorld\HelloWorld.csproj", "{DD572768-6933-D1A2-1681-D44DBC325BE6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphQLServer", "lambda-graphql\src\GraphQLServer\GraphQLServer.csproj", "{9FBE5D39-69BA-C619-6151-F13F8E5CCD06}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0CB65561-B74B-956C-6179-B6DC4F4A06F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CB65561-B74B-956C-6179-B6DC4F4A06F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CB65561-B74B-956C-6179-B6DC4F4A06F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CB65561-B74B-956C-6179-B6DC4F4A06F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD572768-6933-D1A2-1681-D44DBC325BE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD572768-6933-D1A2-1681-D44DBC325BE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD572768-6933-D1A2-1681-D44DBC325BE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD572768-6933-D1A2-1681-D44DBC325BE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FBE5D39-69BA-C619-6151-F13F8E5CCD06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FBE5D39-69BA-C619-6151-F13F8E5CCD06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FBE5D39-69BA-C619-6151-F13F8E5CCD06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FBE5D39-69BA-C619-6151-F13F8E5CCD06}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A9206DA3-B598-A597-C4E1-C45023FF0384} = {776C6F54-940C-1CC7-5C62-8AA152B99E6A}
+		{0CB65561-B74B-956C-6179-B6DC4F4A06F4} = {A9206DA3-B598-A597-C4E1-C45023FF0384}
+		{E9B9D9CD-CAF2-56AA-1709-EA6431BFF179} = {776C6F54-940C-1CC7-5C62-8AA152B99E6A}
+		{DD572768-6933-D1A2-1681-D44DBC325BE6} = {E9B9D9CD-CAF2-56AA-1709-EA6431BFF179}
+		{9FBE5D39-69BA-C619-6151-F13F8E5CCD06} = {E9B9D9CD-CAF2-56AA-1709-EA6431BFF179}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BDDE7AC6-A5F3-4B79-A24B-449260E22648}
+	EndGlobalSection
+EndGlobal
