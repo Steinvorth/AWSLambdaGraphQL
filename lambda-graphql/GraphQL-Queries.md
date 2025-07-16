@@ -5,7 +5,7 @@
 ### 1. Get Hello World
 ```graphql
 query GetHelloWorld {
-  getHelloWorld {
+  helloWorld {
     message
     location
     timestamp
@@ -16,14 +16,14 @@ query GetHelloWorld {
 ### 2. Get Custom Hello
 ```graphql
 query GetCustomHello {
-  getCustomHello(message: "Hello from GraphQL test!")
+  customHello(message: "Hello from GraphQL test!")
 }
 ```
 
 ### 3. Get Server Status
 ```graphql
 query GetServerStatus {
-  getServerStatus {
+  serverStatus {
     isOnline
     version
     environment
@@ -36,7 +36,7 @@ query GetServerStatus {
 ### 4. Get Server Time
 ```graphql
 query GetServerTime {
-  getServerTime
+  serverTime
 }
 ```
 
@@ -45,7 +45,7 @@ query GetServerTime {
 ### 1. Get All Driver Positions for a Route
 ```graphql
 query GetDriverPositionsByRoute($idRuta: String!) {
-  getDriverPositionsByRoute(idRuta: $idRuta) {
+  driverPositionsByRoute(idRuta: $idRuta) {
     idRuta
     idDriver
     longitude
@@ -68,7 +68,7 @@ Variables:
 ### 2. Get Specific Driver Position
 ```graphql
 query GetDriverPosition($idRuta: String!, $idDriver: String!) {
-  getDriverPosition(idRuta: $idRuta, idDriver: $idDriver) {
+  driverPosition(idRuta: $idRuta, idDriver: $idDriver) {
     idRuta
     idDriver
     longitude
@@ -92,7 +92,7 @@ Variables:
 ### 3. Get All Driver Positions
 ```graphql
 query GetAllDriverPositions {
-  getAllDriverPositions {
+  allDriverPositions {
     idRuta
     idDriver
     longitude
@@ -108,7 +108,7 @@ query GetAllDriverPositions {
 ### 4. Get Active Drivers for Route
 ```graphql
 query GetActiveDriversForRoute($idRuta: String!) {
-  getActiveDriversForRoute(idRuta: $idRuta) {
+  activeDriversForRoute(idRuta: $idRuta) {
     idRuta
     idDriver
     longitude
@@ -277,14 +277,14 @@ mutation SimulateDriverMovement {
 ### Track Multiple Drivers
 ```graphql
 query TrackMultipleDrivers {
-  route1: getDriverPositionsByRoute(idRuta: "ROUTE_NYC_001") {
+  route1: driverPositionsByRoute(idRuta: "ROUTE_NYC_001") {
     idDriver
     longitude
     latitude
     timestamp
     status
   }
-  route2: getDriverPositionsByRoute(idRuta: "ROUTE_NYC_002") {
+  route2: driverPositionsByRoute(idRuta: "ROUTE_NYC_002") {
     idDriver
     longitude
     latitude

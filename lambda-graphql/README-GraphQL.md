@@ -147,7 +147,7 @@ See `GraphQL-Queries.md` for comprehensive sample queries and mutations you can 
 ### Example Hello World Query
 ```graphql
 query {
-  getHelloWorld {
+  helloWorld {
     message
     location
     timestamp
@@ -170,7 +170,7 @@ mutation {
 ```graphql
 # Get all drivers for a route
 query {
-  getDriverPositionsByRoute(idRuta: "ROUTE_NYC_001") {
+  driverPositionsByRoute(idRuta: "ROUTE_NYC_001") {
     idDriver
     longitude
     latitude
@@ -181,7 +181,7 @@ query {
 
 # Get specific driver
 query {
-  getDriverPosition(idRuta: "ROUTE_NYC_001", idDriver: "DRIVER_JOHN") {
+  driverPosition(idRuta: "ROUTE_NYC_001", idDriver: "DRIVER_JOHN") {
     idRuta
     idDriver
     longitude

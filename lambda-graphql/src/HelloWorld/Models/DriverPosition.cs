@@ -39,7 +39,25 @@ public class DriverPosition
     /// Timestamp when the position was recorded
     /// </summary>
     [DynamoDBProperty("Timestamp")]
-    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+    public string TimestampString { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Timestamp as DateTime for convenience (computed property)
+    /// </summary>
+    [DynamoDBIgnore]
+    public DateTime Timestamp 
+    {
+        get
+        {
+            if (DateTime.TryParse(TimestampString, out var result))
+                return result;
+            return DateTime.UtcNow;
+        }
+        set
+        {
+            TimestampString = value.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+        }
+    }
 
     /// <summary>
     /// Optional: Speed of the driver (if available)

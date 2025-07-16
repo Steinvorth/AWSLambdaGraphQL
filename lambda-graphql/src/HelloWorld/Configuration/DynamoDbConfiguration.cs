@@ -22,14 +22,13 @@ public static class DynamoDbConfiguration
 
         if (isLocal)
         {
-            // Local DynamoDB configuration
-            var localEndpoint = configuration?.GetValue<string>("DynamoDB:LocalEndpoint") ?? "http://localhost:8000";
+            // Local DynamoDB configuration - always use port 8101 for your setup
+            var localEndpoint = "http://localhost:8101";
             
-            // Check if user specified port 8101
-            if (configuration?.GetValue<string>("DynamoDB:LocalEndpoint")?.Contains("8101") == true ||
-                Environment.GetEnvironmentVariable("DYNAMODB_ENDPOINT")?.Contains("8101") == true)
+            // Override if environment variable is set
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DYNAMODB_ENDPOINT")))
             {
-                localEndpoint = "http://localhost:8101";
+                localEndpoint = Environment.GetEnvironmentVariable("DYNAMODB_ENDPOINT");
             }
 
             config.ServiceURL = localEndpoint;

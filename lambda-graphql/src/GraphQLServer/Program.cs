@@ -24,7 +24,10 @@ builder.Services.AddScoped<DriverPositionService>();
 builder.Services
     .AddGraphQLServer()
     .AddQueryType<Query>()
-    .AddMutationType<Mutation>();
+    .AddMutationType<Mutation>()
+    .AddProjections()
+    .AddFiltering()
+    .AddSorting();
 
 // Add CORS for Apollo Studio/Apollo Explorer
 builder.Services.AddCors(options =>
