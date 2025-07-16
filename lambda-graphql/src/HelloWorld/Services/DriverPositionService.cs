@@ -84,12 +84,8 @@ public class DriverPositionService
         {
             _logger?.LogInformation("Getting all driver positions");
             
-            var scanConfig = new DynamoDBOperationConfig
-            {
-                Limit = 100 // Limit for performance
-            };
-
-            var search = _context.ScanAsync<DriverPosition>(new List<ScanCondition>(), scanConfig);
+            // Use scan with no specific configuration to get all results
+            var search = _context.ScanAsync<DriverPosition>(new List<ScanCondition>());
             var results = await search.GetRemainingAsync();
             
             _logger?.LogInformation("Found {Count} total driver positions", results.Count);
