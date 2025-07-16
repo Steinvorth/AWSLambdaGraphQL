@@ -99,7 +99,7 @@ public class DriverPositionService
     }
 
     /// <summary>
-    /// Save or update a driver position
+    /// Save or update a driver position - simplified for car tracking
     /// </summary>
     public async Task<DriverPosition> SaveDriverPositionAsync(DriverPosition driverPosition)
     {
@@ -108,7 +108,6 @@ public class DriverPositionService
             _logger?.LogInformation("Saving driver position for route: {IdRuta}, driver: {IdDriver}", 
                 driverPosition.IdRuta, driverPosition.IdDriver);
             
-            driverPosition.Timestamp = DateTime.UtcNow;
             await _context.SaveAsync(driverPosition);
             
             _logger?.LogInformation("Successfully saved driver position for route {IdRuta}, driver {IdDriver}", 
@@ -140,36 +139,6 @@ public class DriverPositionService
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error deleting driver position for route {IdRuta}, driver {IdDriver}", idRuta, idDriver);
-            throw;
-        }
-    }
-
-    /// <summary>
-    /// Get active drivers for a route (status = "Active")
-    /// </summary>
-    public async Task<List<DriverPosition>> GetActiveDriversForRouteAsync(string idRuta)
-    {
-        try
-        {
-            _logger?.LogInformation("Getting active drivers for route: {IdRuta}", idRuta);
-            
-            var queryConfig = new DynamoDBOperationConfig
-            {
-                QueryFilter = new List<ScanCondition>
-                {
-                    new ScanCondition("Status", Amazon.DynamoDBv2.DocumentModel.ScanOperator.Equal, "Active")
-                }
-            };
-
-            var search = _context.QueryAsync<DriverPosition>(idRuta, queryConfig);
-            var results = await search.GetRemainingAsync();
-            
-            _logger?.LogInformation("Found {Count} active drivers for route {IdRuta}", results.Count, idRuta);
-            return results;
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error getting active drivers for route {IdRuta}", idRuta);
             throw;
         }
     }

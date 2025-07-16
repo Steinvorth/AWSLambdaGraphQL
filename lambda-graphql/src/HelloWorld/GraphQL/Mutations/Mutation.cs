@@ -43,7 +43,7 @@ public class Mutation
     }
 
     /// <summary>
-    /// Create or update a driver position
+    /// Create or update a driver position - simplified for car tracking
     /// </summary>
     public async Task<DriverPositionResult> SaveDriverPosition(DriverPositionInput input)
     {
@@ -57,11 +57,7 @@ public class Mutation
                 IdRuta = input.IdRuta,
                 IdDriver = input.IdDriver,
                 Longitude = input.Longitude,
-                Latitude = input.Latitude,
-                Speed = input.Speed,
-                Heading = input.Heading,
-                Status = input.Status,
-                Timestamp = DateTime.UtcNow
+                Latitude = input.Latitude
             };
 
             var savedPosition = await _driverPositionService.SaveDriverPositionAsync(driverPosition);
@@ -111,50 +107,6 @@ public class Mutation
         }
     }
 
-    /// <summary>
-    /// Update driver status (Active, Inactive, etc.)
-    /// </summary>
-    public async Task<DriverPositionResult> UpdateDriverStatus(string idRuta, string idDriver, string status)
-    {
-        try
-        {
-            if (_driverPositionService == null)
-                throw new InvalidOperationException("DriverPositionService not available");
-
-            // Get the existing position
-            var existingPosition = await _driverPositionService.GetDriverPositionAsync(idRuta, idDriver);
-            if (existingPosition == null)
-            {
-                return new DriverPositionResult
-                {
-                    Success = false,
-                    Message = "Driver position not found"
-                };
-            }
-
-            // Update the status
-            existingPosition.Status = status;
-            existingPosition.Timestamp = DateTime.UtcNow;
-
-            var updatedPosition = await _driverPositionService.SaveDriverPositionAsync(existingPosition);
-
-            return new DriverPositionResult
-            {
-                Success = true,
-                Message = "Driver status updated successfully",
-                DriverPosition = MapToGraphQLType(updatedPosition)
-            };
-        }
-        catch (Exception ex)
-        {
-            return new DriverPositionResult
-            {
-                Success = false,
-                Message = $"Error updating driver status: {ex.Message}"
-            };
-        }
-    }
-
     private static DriverPositionType MapToGraphQLType(DriverPosition position)
     {
         return new DriverPositionType
@@ -162,11 +114,7 @@ public class Mutation
             IdRuta = position.IdRuta,
             IdDriver = position.IdDriver,
             Longitude = position.Longitude,
-            Latitude = position.Latitude,
-            Timestamp = position.Timestamp,
-            Speed = position.Speed,
-            Heading = position.Heading,
-            Status = position.Status
+            Latitude = position.Latitude
         };
     }
 }

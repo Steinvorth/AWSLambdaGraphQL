@@ -19,7 +19,7 @@ public class HelloWorldInput
 }
 
 /// <summary>
-/// GraphQL type for DriverPosition
+/// GraphQL type for DriverPosition - simplified for real-time car tracking
 /// </summary>
 public class DriverPositionType
 {
@@ -27,14 +27,10 @@ public class DriverPositionType
     public string IdDriver { get; set; } = string.Empty;
     public double Longitude { get; set; }
     public double Latitude { get; set; }
-    public DateTime Timestamp { get; set; }
-    public double? Speed { get; set; }
-    public double? Heading { get; set; }
-    public string Status { get; set; } = "Active";
 }
 
 /// <summary>
-/// Input type for creating/updating driver positions
+/// Input type for creating/updating driver positions - simplified
 /// </summary>
 public class DriverPositionInput
 {
@@ -42,9 +38,6 @@ public class DriverPositionInput
     public string IdDriver { get; set; } = string.Empty;
     public double Longitude { get; set; }
     public double Latitude { get; set; }
-    public double? Speed { get; set; }
-    public double? Heading { get; set; }
-    public string Status { get; set; } = "Active";
 }
 
 /// <summary>

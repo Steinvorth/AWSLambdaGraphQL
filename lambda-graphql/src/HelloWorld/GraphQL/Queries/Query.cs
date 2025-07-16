@@ -70,7 +70,7 @@ public class Query
     /// <summary>
     /// Get all driver positions for a specific route
     /// </summary>
-    public async Task<List<DriverPositionType>> GetDriverPositionsByRoute(string idRuta)
+    public async Task<List<DriverPositionType>> DriverPositionsByRoute(string idRuta)
     {
         if (_driverPositionService == null)
             throw new InvalidOperationException("DriverPositionService not available");
@@ -82,7 +82,7 @@ public class Query
     /// <summary>
     /// Get a specific driver position
     /// </summary>
-    public async Task<DriverPositionType?> GetDriverPosition(string idRuta, string idDriver)
+    public async Task<DriverPositionType?> DriverPosition(string idRuta, string idDriver)
     {
         if (_driverPositionService == null)
             throw new InvalidOperationException("DriverPositionService not available");
@@ -94,24 +94,12 @@ public class Query
     /// <summary>
     /// Get all driver positions across all routes
     /// </summary>
-    public async Task<List<DriverPositionType>> GetAllDriverPositions()
+    public async Task<List<DriverPositionType>> AllDriverPositions()
     {
         if (_driverPositionService == null)
             throw new InvalidOperationException("DriverPositionService not available");
 
         var positions = await _driverPositionService.GetAllDriverPositionsAsync();
-        return positions.Select(MapToGraphQLType).ToList();
-    }
-
-    /// <summary>
-    /// Get active drivers for a specific route
-    /// </summary>
-    public async Task<List<DriverPositionType>> GetActiveDriversForRoute(string idRuta)
-    {
-        if (_driverPositionService == null)
-            throw new InvalidOperationException("DriverPositionService not available");
-
-        var positions = await _driverPositionService.GetActiveDriversForRouteAsync(idRuta);
         return positions.Select(MapToGraphQLType).ToList();
     }
 
@@ -138,11 +126,7 @@ public class Query
             IdRuta = position.IdRuta,
             IdDriver = position.IdDriver,
             Longitude = position.Longitude,
-            Latitude = position.Latitude,
-            Timestamp = position.Timestamp,
-            Speed = position.Speed,
-            Heading = position.Heading,
-            Status = position.Status
+            Latitude = position.Latitude
         };
     }
 }

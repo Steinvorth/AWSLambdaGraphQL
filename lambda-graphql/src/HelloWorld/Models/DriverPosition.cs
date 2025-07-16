@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace HelloWorld.Models;
 
 /// <summary>
-/// DynamoDB model for DriverPosition table
+/// DynamoDB model for DriverPosition table - simplified for real-time car tracking
 /// </summary>
 [DynamoDBTable("DriverPosition")]
 public class DriverPosition
@@ -34,46 +34,4 @@ public class DriverPosition
     /// </summary>
     [DynamoDBProperty("Latitude")]
     public double Latitude { get; set; }
-
-    /// <summary>
-    /// Timestamp when the position was recorded
-    /// </summary>
-    [DynamoDBProperty("Timestamp")]
-    public string TimestampString { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Timestamp as DateTime for convenience (computed property)
-    /// </summary>
-    [DynamoDBIgnore]
-    public DateTime Timestamp 
-    {
-        get
-        {
-            if (DateTime.TryParse(TimestampString, out var result))
-                return result;
-            return DateTime.UtcNow;
-        }
-        set
-        {
-            TimestampString = value.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
-        }
-    }
-
-    /// <summary>
-    /// Optional: Speed of the driver (if available)
-    /// </summary>
-    [DynamoDBProperty("Speed")]
-    public double? Speed { get; set; }
-
-    /// <summary>
-    /// Optional: Heading/direction of the driver (if available)
-    /// </summary>
-    [DynamoDBProperty("Heading")]
-    public double? Heading { get; set; }
-
-    /// <summary>
-    /// Status of the driver (Active, Inactive, etc.)
-    /// </summary>
-    [DynamoDBProperty("Status")]
-    public string Status { get; set; } = "Active";
 }

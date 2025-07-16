@@ -50,10 +50,6 @@ query GetDriverPositionsByRoute($idRuta: String!) {
     idDriver
     longitude
     latitude
-    timestamp
-    speed
-    heading
-    status
   }
 }
 ```
@@ -73,10 +69,6 @@ query GetDriverPosition($idRuta: String!, $idDriver: String!) {
     idDriver
     longitude
     latitude
-    timestamp
-    speed
-    heading
-    status
   }
 }
 ```
@@ -97,10 +89,6 @@ query GetAllDriverPositions {
     idDriver
     longitude
     latitude
-    timestamp
-    speed
-    heading
-    status
   }
 }
 ```
@@ -141,10 +129,6 @@ mutation SaveDriverPosition($input: DriverPositionInput!) {
       idDriver
       longitude
       latitude
-      timestamp
-      speed
-      heading
-      status
     }
   }
 }
@@ -157,10 +141,7 @@ Variables:
     "idRuta": "ROUTE_001",
     "idDriver": "DRIVER_001",
     "longitude": -74.0060,
-    "latitude": 40.7128,
-    "speed": 35.5,
-    "heading": 180.0,
-    "status": "Active"
+    "latitude": 40.7128
   }
 }
 ```
