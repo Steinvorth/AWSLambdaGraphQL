@@ -1,12 +1,12 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  Sample SAM Template for lambda-graphql
+  GraphQL Lambda for AppSync datasource
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 10
+    Timeout: 30
     MemorySize: 512
 
 Resources:
@@ -28,6 +28,26 @@ Resources:
           Properties:
             Path: /hello
             Method: get
+        GraphQLEndpoint:
+          Type: Api
+          Properties:
+            Path: /graphql
+            Method: post
+        GraphQLOptions:
+          Type: Api
+          Properties:
+            Path: /graphql
+            Method: options
+        HealthCheck:
+          Type: Api
+          Properties:
+            Path: /health
+            Method: get
+        Root:
+          Type: Api
+          Properties:
+            Path: /
+            Method: get
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
@@ -36,6 +56,12 @@ Outputs:
   HelloWorldApi:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+  GraphQLApi:
+    Description: "API Gateway endpoint URL for Prod stage for GraphQL function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/graphql"
+  HealthCheckApi:
+    Description: "API Gateway endpoint URL for Prod stage for Health Check"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/health"
   HelloWorldFunction:
     Description: "Hello World Lambda Function ARN"
     Value: !GetAtt HelloWorldFunction.Arn

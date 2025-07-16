@@ -34,6 +34,29 @@
             "lambda": {
                 "runtime": "dotnet8"
             }
+        },
+        {
+            "type": "coreclr",
+            "request": "launch",
+            "name": "GraphQL Server (Development)",
+            "program": "${workspaceFolder}/lambda-graphql/src/GraphQLServer/bin/Debug/net8.0/GraphQLServer.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/lambda-graphql/src/GraphQLServer",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+                "uriFormat": "%s/graphql"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_URLS": "http://localhost:5001"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/lambda-graphql/src/GraphQLServer/Views"
+            },
+            "preLaunchTask": "build-graphql-server",
+            "console": "integratedTerminal"
         }
     ]
 }
