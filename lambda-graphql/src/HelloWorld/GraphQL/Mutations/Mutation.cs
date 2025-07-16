@@ -1,6 +1,7 @@
 using HelloWorld.GraphQL.Types;
 using HelloWorld.Services;
 using HelloWorld.Models;
+using HotChocolate.Subscriptions;
 
 namespace HelloWorld.GraphQL.Mutations;
 
@@ -45,7 +46,9 @@ public class Mutation
     /// <summary>
     /// Create or update a driver position - simplified for car tracking
     /// </summary>
-    public async Task<DriverPositionResult> SaveDriverPosition(DriverPositionInput input)
+    public async Task<DriverPositionResult> SaveDriverPosition(
+        DriverPositionInput input,
+        [Service] ITopicEventSender eventSender)
     {
         try
         {
@@ -62,11 +65,16 @@ public class Mutation
 
             var savedPosition = await _driverPositionService.SaveDriverPositionAsync(driverPosition);
 
+            var driverPositionType = MapToGraphQLType(savedPosition);
+
+            // Publish the update to the subscription topic
+            await eventSender.SendAsync($"DriverPositionUpdated_{input.IdRuta}", driverPositionType);
+
             return new DriverPositionResult
             {
                 Success = true,
                 Message = "Driver position saved successfully",
-                DriverPosition = MapToGraphQLType(savedPosition)
+                DriverPosition = driverPositionType
             };
         }
         catch (Exception ex)

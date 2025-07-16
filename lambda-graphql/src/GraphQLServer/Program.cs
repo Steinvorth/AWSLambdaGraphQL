@@ -1,5 +1,6 @@
 using HelloWorld.GraphQL.Queries;
 using HelloWorld.GraphQL.Mutations;
+using HelloWorld.GraphQL.Subscriptions;
 using HelloWorld.Services;
 using HelloWorld.Configuration;
 using Amazon.DynamoDBv2;
@@ -25,6 +26,8 @@ builder.Services
     .AddGraphQLServer()
     .AddQueryType<Query>()
     .AddMutationType<Mutation>()
+    .AddSubscriptionType<Subscription>()
+    .AddInMemorySubscriptions()
     .AddProjections()
     .AddFiltering()
     .AddSorting();
@@ -68,6 +71,7 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
+app.UseWebSockets();
 app.UseCors("AllowAll");
 
 // Map GraphQL endpoint
