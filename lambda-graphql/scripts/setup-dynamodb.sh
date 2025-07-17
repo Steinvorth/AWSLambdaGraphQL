@@ -142,4 +142,4 @@ echo "2. Open Apollo Studio at: http://localhost:5001/graphql"
 echo "3. Test the driver position queries and mutations"
 echo ""
 echo "Sample query to try:"
-echo 'query { getDriverPositionsByRoute(idRuta: "ROUTE_NYC_001") { idDriver longitude latitude status } }'
+echo 'query { driverPositionsByRoute(idRuta: "ROUTE_NYC_001") { idDriver longitude latitude status } }'

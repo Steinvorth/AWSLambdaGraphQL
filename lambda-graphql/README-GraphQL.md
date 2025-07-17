@@ -50,36 +50,22 @@ sam deploy --guided
 
 ### Lambda (After Deployment)
 - **GraphQL**: `https://your-api-id.execute-api.region.amazonaws.com/Prod/graphql`
-- **Hello World**: `https://your-api-id.execute-api.region.amazonaws.com/Prod/hello`
 - **Health Check**: `https://your-api-id.execute-api.region.amazonaws.com/Prod/health`
 
 ## GraphQL Schema
 
-### Queries
-- `getHelloWorld` - Returns hello world with location
-- `getCustomHello(message: String!)` - Returns custom hello message
-- `getServerStatus` - Returns server status information
-- `getServerTime` - Returns current server time
-
-#### Driver Position Queries (DynamoDB)
+### Driver Position Queries (DynamoDB)
 - `getDriverPositionsByRoute(idRuta: String!)` - Get all driver positions for a specific route
 - `getDriverPosition(idRuta: String!, idDriver: String!)` - Get a specific driver position
 - `getAllDriverPositions` - Get all driver positions across all routes
 - `getActiveDriversForRoute(idRuta: String!)` - Get active drivers for a specific route
 
-### Mutations
-- `createHelloWorld(input: HelloWorldInput!)` - Creates a custom hello world
-- `updateServerConfig(environment: String!)` - Updates server configuration
-
-#### Driver Position Mutations (DynamoDB)
+### Driver Position Mutations (DynamoDB)
 - `saveDriverPosition(input: DriverPositionInput!)` - Create or update a driver position
 - `deleteDriverPosition(idRuta: String!, idDriver: String!)` - Delete a driver position
 - `updateDriverStatus(idRuta: String!, idDriver: String!, status: String!)` - Update driver status
 
 ### Types
-- `HelloWorldType` - Basic hello world response
-- `ServerStatus` - Server status information
-- `HelloWorldInput` - Input for hello world mutations
 - `DriverPositionType` - Driver position data with coordinates and status
 - `DriverPositionInput` - Input for creating/updating driver positions
 - `DriverPositionResult` - Result type for driver position mutations

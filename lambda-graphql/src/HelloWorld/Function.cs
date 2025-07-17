@@ -17,19 +17,8 @@ namespace HelloWorld;
 
 public class Function
 {
-    private static readonly HttpClient client = new HttpClient();
     private readonly Query _query = new Query();
     private readonly Mutation _mutation = new Mutation();
-
-    private static async Task<string> GetCallingIP()
-    {
-        client.DefaultRequestHeaders.Accept.Clear();
-        client.DefaultRequestHeaders.Add("User-Agent", "AWS Lambda .Net Client");
-
-        var msg = await client.GetStringAsync("http://checkip.amazonaws.com/").ConfigureAwait(continueOnCapturedContext:false);
-
-        return msg.Replace("\n","");
-    }
 
     public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest apigProxyEvent, ILambdaContext context)
     {
@@ -39,22 +28,23 @@ public class Function
             var path = apigProxyEvent.Path?.ToLowerInvariant();
             var httpMethod = apigProxyEvent.HttpMethod?.ToUpperInvariant();
 
-            // Handle different endpoints
+            // Handle GraphQL endpoint
             if (path == "/graphql" && httpMethod == "POST")
             {
                 return await HandleGraphQLRequest(apigProxyEvent, context);
-            }
-            else if (path == "/hello" || path == "/")
-            {
-                return await HandleHelloWorldRequest(apigProxyEvent, context);
             }
             else if (path == "/health")
             {
                 return await HandleHealthRequest();
             }
 
-            // Default response
-            return await HandleHelloWorldRequest(apigProxyEvent, context);
+            // Return 404 for unsupported endpoints
+            return new APIGatewayProxyResponse
+            {
+                Body = JsonSerializer.Serialize(new { error = "Endpoint not found" }),
+                StatusCode = 404,
+                Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
+            };
         }
         catch (Exception ex)
         {
@@ -69,33 +59,16 @@ public class Function
         }
     }
 
-    private async Task<APIGatewayProxyResponse> HandleHelloWorldRequest(APIGatewayProxyRequest request, ILambdaContext context)
+    private Task<APIGatewayProxyResponse> HandleHealthRequest()
     {
-        var location = await GetCallingIP();
-        var body = new Dictionary<string, string>
-        {
-            { "message", "hello world" },
-            { "location", location }
-        };
-
-        return new APIGatewayProxyResponse
-        {
-            Body = JsonSerializer.Serialize(body),
-            StatusCode = 200,
-            Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
-        };
-    }
-
-    private async Task<APIGatewayProxyResponse> HandleHealthRequest()
-    {
-        var serverStatus = await _query.GetServerStatus();
+        var healthStatus = new { status = "healthy", timestamp = DateTime.UtcNow };
         
-        return new APIGatewayProxyResponse
+        return Task.FromResult(new APIGatewayProxyResponse
         {
-            Body = JsonSerializer.Serialize(serverStatus),
+            Body = JsonSerializer.Serialize(healthStatus),
             StatusCode = 200,
             Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
-        };
+        });
     }
 
     private async Task<APIGatewayProxyResponse> HandleGraphQLRequest(APIGatewayProxyRequest request, ILambdaContext context)
@@ -156,28 +129,50 @@ public class Function
         // This is a simple GraphQL resolver - in production you'd use HotChocolate's execution engine
         var query = request.Query.Trim();
 
-        // Handle simple queries
-        if (query.Contains("getHelloWorld"))
+        // Handle driver position queries
+        if (query.Contains("driverPositionsByRoute"))
         {
-            var result = await _query.GetHelloWorld();
-            return new { data = new { getHelloWorld = result } };
+            var idRuta = ExtractStringParameter(query, "idRuta");
+            if (!string.IsNullOrEmpty(idRuta))
+            {
+                var result = await _query.DriverPositionsByRoute(idRuta);
+                return new { data = new { driverPositionsByRoute = result } };
+            }
         }
-        else if (query.Contains("getServerStatus"))
+        else if (query.Contains("driverPosition") && !query.Contains("driverPositionsByRoute"))
         {
-            var result = await _query.GetServerStatus();
-            return new { data = new { getServerStatus = result } };
+            var idRuta = ExtractStringParameter(query, "idRuta");
+            var idDriver = ExtractStringParameter(query, "idDriver");
+            if (!string.IsNullOrEmpty(idRuta) && !string.IsNullOrEmpty(idDriver))
+            {
+                var result = await _query.DriverPosition(idRuta, idDriver);
+                return new { data = new { driverPosition = result } };
+            }
         }
-        else if (query.Contains("getServerTime"))
+        else if (query.Contains("allDriverPositions"))
         {
-            var result = _query.GetServerTime();
-            return new { data = new { getServerTime = result } };
+            var result = await _query.AllDriverPositions();
+            return new { data = new { allDriverPositions = result } };
         }
-        else if (query.Contains("createHelloWorld"))
+        else if (query.Contains("saveDriverPosition"))
         {
-            var customMessage = request.Variables?.GetValueOrDefault("customMessage")?.ToString();
-            var input = new HelloWorldInput { CustomMessage = customMessage };
-            var result = _mutation.CreateHelloWorld(input);
-            return new { data = new { createHelloWorld = result } };
+            var input = ExtractDriverPositionInput(request);
+            if (input != null)
+            {
+                // For Lambda, we don't have real-time subscriptions, so we use a null event sender
+                var result = await _mutation.SaveDriverPosition(input, new MockEventSender());
+                return new { data = new { saveDriverPosition = result } };
+            }
+        }
+        else if (query.Contains("deleteDriverPosition"))
+        {
+            var idRuta = ExtractStringParameter(query, "idRuta");
+            var idDriver = ExtractStringParameter(query, "idDriver");
+            if (!string.IsNullOrEmpty(idRuta) && !string.IsNullOrEmpty(idDriver))
+            {
+                var result = await _mutation.DeleteDriverPosition(idRuta, idDriver);
+                return new { data = new { deleteDriverPosition = result } };
+            }
         }
 
         // Default introspection query response
@@ -193,8 +188,9 @@ public class Function
                         {
                             new { name = "Query", kind = "OBJECT" },
                             new { name = "Mutation", kind = "OBJECT" },
-                            new { name = "HelloWorldType", kind = "OBJECT" },
-                            new { name = "ServerStatus", kind = "OBJECT" }
+                            new { name = "DriverPositionType", kind = "OBJECT" },
+                            new { name = "DriverPositionInput", kind = "INPUT_OBJECT" },
+                            new { name = "DriverPositionResult", kind = "OBJECT" }
                         }
                     }
                 }
@@ -203,6 +199,38 @@ public class Function
 
         return new { errors = new[] { new { message = "Query not supported in this basic implementation" } } };
     }
+
+    private string ExtractStringParameter(string query, string paramName)
+    {
+        // Simple parameter extraction - in production use proper GraphQL parsing
+        var pattern = $"\"{paramName}\"\\s*:\\s*\"([^\"]+)\"";
+        var match = System.Text.RegularExpressions.Regex.Match(query, pattern);
+        return match.Success ? match.Groups[1].Value : string.Empty;
+    }
+
+    private DriverPositionInput? ExtractDriverPositionInput(GraphQLRequest request)
+    {
+        // Simple input extraction - in production use proper GraphQL parsing
+        if (request.Variables?.TryGetValue("input", out var inputObj) == true)
+        {
+            try
+            {
+                var jsonElement = (JsonElement)inputObj;
+                return new DriverPositionInput
+                {
+                    IdRuta = jsonElement.GetProperty("idRuta").GetString() ?? string.Empty,
+                    IdDriver = jsonElement.GetProperty("idDriver").GetString() ?? string.Empty,
+                    Longitude = jsonElement.GetProperty("longitude").GetDouble(),
+                    Latitude = jsonElement.GetProperty("latitude").GetDouble()
+                };
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        return null;
+    }
 }
 
 public class GraphQLRequest
@@ -210,4 +238,20 @@ public class GraphQLRequest
     public string Query { get; set; } = string.Empty;
     public Dictionary<string, object>? Variables { get; set; }
     public string? OperationName { get; set; }
+}
+
+// Mock event sender for Lambda execution (no real-time subscriptions)
+public class MockEventSender : HotChocolate.Subscriptions.ITopicEventSender
+{
+    public ValueTask SendAsync<TMessage>(string topicName, TMessage message, CancellationToken cancellationToken = default)
+    {
+        // In Lambda, we don't have real-time subscriptions, so this is a no-op
+        return ValueTask.CompletedTask;
+    }
+
+    public ValueTask CompleteAsync(string topicName)
+    {
+        // In Lambda, we don't have real-time subscriptions, so this is a no-op
+        return ValueTask.CompletedTask;
+    }
 }

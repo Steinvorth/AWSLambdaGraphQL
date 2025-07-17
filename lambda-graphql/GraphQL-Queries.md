@@ -1,44 +1,4 @@
-# Sample GraphQL Queries for Testing
-
-## Basic Query Examples
-
-### 1. Get Hello World
-```graphql
-query GetHelloWorld {
-  helloWorld {
-    message
-    location
-    timestamp
-  }
-}
-```
-
-### 2. Get Custom Hello
-```graphql
-query GetCustomHello {
-  customHello(message: "Hello from GraphQL test!")
-}
-```
-
-### 3. Get Server Status
-```graphql
-query GetServerStatus {
-  serverStatus {
-    isOnline
-    version
-    environment
-    location
-    lastStarted
-  }
-}
-```
-
-### 4. Get Server Time
-```graphql
-query GetServerTime {
-  serverTime
-}
-```
+# Driver Position GraphQL Queries
 
 ## Driver Position Queries (DynamoDB)
 
@@ -186,30 +146,6 @@ Variables:
 {
   "idRuta": "ROUTE_001",
   "idDriver": "DRIVER_001"
-}
-```
-
-## Basic Mutation Examples
-
-### 1. Create Hello World
-```graphql
-mutation CreateHelloWorld {
-  createHelloWorld(input: { customMessage: "Hello from mutation!" }) {
-    message
-    location
-    timestamp
-  }
-}
-```
-
-### 2. Update Server Config
-```graphql
-mutation UpdateServerConfig {
-  updateServerConfig(environment: "production") {
-    success
-    message
-    updatedAt
-  }
 }
 ```
 
