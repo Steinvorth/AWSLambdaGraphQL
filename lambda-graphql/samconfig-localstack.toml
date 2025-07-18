@@ -1,0 +1,40 @@
+# LocalStack-specific SAM configuration
+version = 0.1
+
+[localstack.global.parameters]
+stack_name = "lambda-graphql-local"
+
+[localstack.build.parameters]
+cached = true
+parallel = true
+
+[localstack.validate.parameters]
+lint = true
+
+[localstack.deploy.parameters]
+capabilities = "CAPABILITY_IAM"
+confirm_changeset = false
+resolve_s3 = false
+s3_bucket = "lambda-deployments"
+s3_prefix = "lambda-graphql"
+region = "us-east-1"
+parameter_overrides = ["Environment=local"]
+endpoint_url = "http://localhost:4566"
+no_execute_changeset = false
+fail_on_empty_changeset = false
+
+[localstack.package.parameters]
+resolve_s3 = false
+s3_bucket = "lambda-deployments"
+s3_prefix = "lambda-graphql"
+region = "us-east-1"
+endpoint_url = "http://localhost:4566"
+
+[localstack.sync.parameters]
+watch = false
+
+[localstack.local_start_api.parameters]
+warm_containers = "EAGER"
+
+[localstack.local_start_lambda.parameters]
+warm_containers = "EAGER"

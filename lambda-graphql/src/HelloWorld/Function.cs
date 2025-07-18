@@ -3,12 +3,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 using Amazon.Lambda.Core;
 using Amazon.Lambda.APIGatewayEvents;
+using Amazon.DynamoDBv2;
 using HelloWorld.GraphQL.Queries;
 using HelloWorld.GraphQL.Mutations;
 using HelloWorld.GraphQL.Types;
+using HelloWorld.Services;
+using HelloWorld.Configuration;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -17,8 +21,19 @@ namespace HelloWorld;
 
 public class Function
 {
-    private readonly Query _query = new Query();
-    private readonly Mutation _mutation = new Mutation();
+    private readonly Query _query;
+    private readonly Mutation _mutation;
+
+    public Function()
+    {
+        // Initialize DynamoDB client
+        var dynamoDbClient = DynamoDbConfiguration.CreateDynamoDbClient();
+        var driverPositionService = new DriverPositionService(dynamoDbClient);
+        
+        // Initialize GraphQL resolvers
+        _query = new Query(driverPositionService);
+        _mutation = new Mutation(driverPositionService);
+    }
 
     public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest apigProxyEvent, ILambdaContext context)
     {
@@ -83,10 +98,13 @@ public class Function
                 requestBody = System.Text.Encoding.UTF8.GetString(bytes);
             }
 
+            context.Logger.LogInformation($"GraphQL Request Body: {requestBody}");
+
             var graphqlRequest = JsonSerializer.Deserialize<GraphQLRequest>(requestBody);
             
             if (graphqlRequest == null || string.IsNullOrEmpty(graphqlRequest.Query))
             {
+                context.Logger.LogError($"Invalid GraphQL request. Parsed request: {graphqlRequest?.Query ?? "null"}");
                 return new APIGatewayProxyResponse
                 {
                     Body = JsonSerializer.Serialize(new { error = "Invalid GraphQL request" }),
@@ -202,8 +220,8 @@ public class Function
 
     private string ExtractStringParameter(string query, string paramName)
     {
-        // Simple parameter extraction - in production use proper GraphQL parsing
-        var pattern = $"\"{paramName}\"\\s*:\\s*\"([^\"]+)\"";
+        // Handle GraphQL syntax: paramName: "value"
+        var pattern = $"{paramName}\\s*:\\s*\"([^\"]+)\"";
         var match = System.Text.RegularExpressions.Regex.Match(query, pattern);
         return match.Success ? match.Groups[1].Value : string.Empty;
     }
@@ -235,8 +253,13 @@ public class Function
 
 public class GraphQLRequest
 {
+    [JsonPropertyName("query")]
     public string Query { get; set; } = string.Empty;
+    
+    [JsonPropertyName("variables")]
     public Dictionary<string, object>? Variables { get; set; }
+    
+    [JsonPropertyName("operationName")]
     public string? OperationName { get; set; }
 }
 

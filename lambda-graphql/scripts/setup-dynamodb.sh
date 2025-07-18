@@ -83,11 +83,7 @@ aws dynamodb put-item \
         "IdRuta": {"S": "ROUTE_NYC_001"},
         "IdDriver": {"S": "DRIVER_JOHN"},
         "Longitude": {"N": "-74.0060"},
-        "Latitude": {"N": "40.7128"},
-        "Timestamp": {"S": "'$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)'"},
-        "Speed": {"N": "25.5"},
-        "Heading": {"N": "90.0"},
-        "Status": {"S": "Active"}
+        "Latitude": {"N": "40.7128"}
     }' \
     --endpoint-url $DYNAMODB_ENDPOINT \
     --region us-east-1
@@ -98,11 +94,7 @@ aws dynamodb put-item \
         "IdRuta": {"S": "ROUTE_NYC_001"},
         "IdDriver": {"S": "DRIVER_MARY"},
         "Longitude": {"N": "-74.0110"},
-        "Latitude": {"N": "40.7180"},
-        "Timestamp": {"S": "'$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)'"},
-        "Speed": {"N": "30.0"},
-        "Heading": {"N": "180.0"},
-        "Status": {"S": "Active"}
+        "Latitude": {"N": "40.7180"}
     }' \
     --endpoint-url $DYNAMODB_ENDPOINT \
     --region us-east-1
@@ -113,11 +105,7 @@ aws dynamodb put-item \
         "IdRuta": {"S": "ROUTE_NYC_002"},
         "IdDriver": {"S": "DRIVER_BOB"},
         "Longitude": {"N": "-74.0200"},
-        "Latitude": {"N": "40.7200"},
-        "Timestamp": {"S": "'$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)'"},
-        "Speed": {"N": "15.0"},
-        "Heading": {"N": "270.0"},
-        "Status": {"S": "Inactive"}
+        "Latitude": {"N": "40.7200"}
     }' \
     --endpoint-url $DYNAMODB_ENDPOINT \
     --region us-east-1
@@ -131,7 +119,7 @@ aws dynamodb scan \
     --endpoint-url $DYNAMODB_ENDPOINT \
     --region us-east-1 \
     --output table \
-    --query 'Items[*].[IdRuta.S,IdDriver.S,Longitude.N,Latitude.N,Status.S]'
+    --query 'Items[*].[IdRuta.S,IdDriver.S,Longitude.N,Latitude.N]'
 
 echo ""
 echo "🎉 Setup complete!"
@@ -142,4 +130,4 @@ echo "2. Open Apollo Studio at: http://localhost:5001/graphql"
 echo "3. Test the driver position queries and mutations"
 echo ""
 echo "Sample query to try:"
-echo 'query { driverPositionsByRoute(idRuta: "ROUTE_NYC_001") { idDriver longitude latitude status } }'
+echo 'query { driverPositionsByRoute(idRuta: "ROUTE_NYC_001") { idDriver longitude latitude } }'

@@ -20,16 +20,21 @@ public static class DynamoDbConfiguration
                      Environment.GetEnvironmentVariable("AWS_SAM_LOCAL") == "true" ||
                      configuration?.GetValue<bool>("DynamoDB:UseLocal") == true;
 
-        if (isLocal)
+        // Check for LocalStack environment
+        var isLocalStack = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("LOCALSTACK_HOSTNAME")) ||
+                          Environment.GetEnvironmentVariable("AWS_ENDPOINT_URL") != null;
+
+        if (isLocal || isLocalStack)
         {
-            // Local DynamoDB configuration - always use port 8101 for your setup
-            var localEndpoint = "http://localhost:8101";
-            
-            // Override if environment variable is set
-            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DYNAMODB_ENDPOINT")))
-            {
-                localEndpoint = Environment.GetEnvironmentVariable("DYNAMODB_ENDPOINT");
-            }
+            // Priority order for endpoint configuration:
+            // 1. DYNAMODB_ENDPOINT environment variable
+            // 2. AWS_ENDPOINT_URL environment variable (LocalStack)
+            // 3. Configuration file LocalEndpoint
+            // 4. Default LocalStack endpoint
+            var localEndpoint = Environment.GetEnvironmentVariable("DYNAMODB_ENDPOINT") ??
+                               Environment.GetEnvironmentVariable("AWS_ENDPOINT_URL") ??
+                               configuration?.GetValue<string>("DynamoDB:LocalEndpoint") ??
+                               "http://localhost:4566";
 
             config.ServiceURL = localEndpoint;
             config.UseHttp = true;

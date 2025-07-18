@@ -22,6 +22,9 @@ Resources:
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
           PARAM1: VALUE
+          AWS_ENDPOINT_URL: http://host.docker.internal:4566
+          DYNAMODB_ENDPOINT: http://host.docker.internal:4566
+          AWS_DEFAULT_REGION: us-east-1
       Events:
         HelloWorld:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
